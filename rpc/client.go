@@ -65,7 +65,7 @@ func (c Client) Call(method string, params interface{}) (*[]byte, error) {
 }
 
 // GetLastBlock returns the height and blockhash of the last (or "best") block
-func (c Client) GetLastBlock() (uint32, string, error) {
+func (c Client) GetLastBlock() (uint64, string, error) {
 	j, err := c.Call("getblockchaininfo", []string{})
 	if err != nil {
 		return 0, "", err
@@ -73,7 +73,7 @@ func (c Client) GetLastBlock() (uint32, string, error) {
 
 	t := struct {
 		Result struct {
-			Height    uint32 `json:"blocks"`
+			Height    uint64 `json:"blocks"`
 			BlockHash string `json:"bestblockhash"`
 		} `json:"result"`
 	}{}
@@ -86,8 +86,8 @@ func (c Client) GetLastBlock() (uint32, string, error) {
 }
 
 // GetBlockHash returns the blockhash of a block at the specified height
-func (c Client) GetBlockHash(height uint32) (string, error) {
-	params := []uint32{height}
+func (c Client) GetBlockHash(height uint64) (string, error) {
+	params := []uint64{height}
 
 	j, err := c.Call("getblockhash", params)
 	if err != nil {
@@ -107,16 +107,16 @@ func (c Client) GetBlockHash(height uint32) (string, error) {
 
 // Block is used by rpc.GetBlock()
 type Block struct {
-	Height     uint32 `json:"height"`
+	Height     uint64 `json:"height"`
 	Hash       string `json:"hash"`
-	Size       uint32 `json:"size"`
-	Weight     uint32 `json:"weight"`
-	Time       uint32 `json:"time"`
-	MedianTime uint32 `json:"mediantime"`
+	Size       uint64 `json:"size"`
+	Weight     uint64 `json:"weight"`
+	Time       uint64 `json:"time"`
+	MedianTime uint64 `json:"mediantime"`
 	Difficulty float64 `json:"difficulty"`
 }
 
-//GetBlock returns a some basic information about a block with the given blockhash
+// GetBlock returns a some basic information about a block with the given blockhash
 func (c Client) GetBlock(blockhash string) (*Block, error) {
 	j, err := c.Call("getblock", []string{blockhash})
 	if err != nil {
@@ -128,6 +128,29 @@ func (c Client) GetBlock(blockhash string) (*Block, error) {
 	}{}
 
 	if err = json.Unmarshal(*j, &t); err != nil {
+		return nil, err
+	}
+
+	return &t.Result, nil
+}
+
+// BlockStats is used by rpc.GetBlockStats()
+type BlockStats map[string][]interface{}
+
+// GetBlockStats will return statistics about the block with the given height. RPC method "getblockstats" will be used.
+func (c Client) GetBlockStats(height uint64) (*BlockStats, error) {
+	params := []uint64{height, height}
+
+	j, err := c.Call("getblockstats", params)
+	if err != nil {
+		return nil, err
+	}
+
+	t := struct {
+		Result BlockStats `json:"result"`
+	}{}
+
+	if err := json.Unmarshal(*j, &t); err != nil {
 		return nil, err
 	}
 

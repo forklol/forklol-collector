@@ -1,5 +1,11 @@
 package config
 
+const (
+	CHAINSPLIT_TIMESTAMP = 1501593374
+	CHAINSPLIT_WORK = 32729585000856628.00
+	CHAINSPLIT_HEIGHT = 478558
+)
+
 type options struct {
 	DEBUG                bool
 	DB_CONNECTION_STRING string

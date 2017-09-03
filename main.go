@@ -20,28 +20,39 @@ func main() {
 	// FIXME: get from config file
 	coins = []bitcoin.Coin{
 		{
-			Symbol:  "BTC",
-			RPCUrl:  "http://172.17.0.2:8332/",
-			RPCUser: "forklol",
-			RPCPass: "forklol",
+			Symbol:   "BTC",
+			RPCUrl:   "http://192.168.1.2:8332/",
+			RPCUser:  "forklol",
+			RPCPass:  "forklol",
+			RPCStats: true,
+			SegWit:   true,
 		},
 		{
-			Symbol:  "BCH",
-			RPCUrl:  "http://172.17.0.3:8332/",
-			RPCUser: "forklol",
-			RPCPass: "forklol",
+			Symbol:   "BCH",
+			RPCUrl:   "http://192.168.1.2:8331/",
+			RPCUser:  "forklol",
+			RPCPass:  "forklol",
+			RPCStats: true,
+			SegWit:   false,
 		},
 	}
 
 	syncers := make([]bitcoin.ChainSync, 0)
 
+	done := make(chan bool)
+
 	// initial sync
 	for _, coin := range coins {
 		sync := bitcoin.NewChainSync(coin)
-		sync.Sync()
+		go sync.Sync(done)
 
 		syncers = append(syncers, sync)
 	}
+
+	for n := 0; n < len(syncers); n++ {
+		<-done
+	}
+	close(done)
 
 	RunSyncers(syncers)
 }
@@ -50,15 +61,20 @@ func RunSyncers(syncers []bitcoin.ChainSync) {
 	t := time.NewTicker(time.Second * 5)
 
 	for {
+		done := make(chan bool)
 		select {
 		case <-t.C:
 			t.Stop()
 			for _, sync := range syncers {
 				log.Printf("Checking for new %s blocks.\n", sync.Coin.Symbol)
-				sync.Sync()
+				go sync.Sync(done)
 			}
 		}
 
+		for n := 0; n < len(syncers); n++ {
+			<-done
+		}
+		close(done)
 		t = time.NewTicker(time.Second * 5)
 	}
 }

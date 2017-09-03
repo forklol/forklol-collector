@@ -3,10 +3,12 @@ package bitcoin
 import "forklol-collector/rpc"
 
 type Coin struct {
-	Symbol  string
-	RPCUrl  string
-	RPCUser string
-	RPCPass string
+	Symbol   string
+	RPCUrl   string
+	RPCUser  string
+	RPCPass  string
+	RPCStats bool
+	SegWit   bool
 
 	rpc *rpc.Client
 }
