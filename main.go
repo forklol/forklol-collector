@@ -9,6 +9,7 @@ import (
 	"forklol-collector/bitcoin"
 	"time"
 	"log"
+	"forklol-collector/stats"
 )
 
 var coins []bitcoin.Coin
@@ -35,6 +36,14 @@ func main() {
 			RPCStats: true,
 			SegWit:   false,
 		},
+	}
+
+	if config.Options().DEBUG {
+		now := uint64(time.Now().Unix() - (600 * 24 * 3600))
+
+		s := stats.NewDetailStatistic("BTC", "txs")
+		fmt.Printf("%+v\n",s.GetValues(s.Compacter(stats.COMPACT_TIME, now-(3*3600), now, 3600), stats.VALUE_AVG, stats.TYPE_FLOAT64))
+		return
 	}
 
 	syncers := make([]bitcoin.ChainSync, 0)

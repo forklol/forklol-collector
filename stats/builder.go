@@ -13,4 +13,4 @@ func NewStatBuilder(coin bitcoin.Coin) *StatBuilder {
 	}
 }
 
-func (b StatBuilder) CreateStat()
+//func (b StatBuilder) CreateStat()
