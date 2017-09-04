@@ -9,8 +9,7 @@ import (
 	"forklol-collector/bitcoin"
 	"time"
 	"forklol-collector/stats"
-	"encoding/json"
-	"io/ioutil"
+	"runtime"
 )
 
 var coins []bitcoin.Coin
@@ -18,6 +17,7 @@ var coins []bitcoin.Coin
 func main() {
 	Init()
 	stats.LoadPresets()
+	stats.StartDispatcher(runtime.NumCPU() - 2)
 	db.InitDB(config.Options().DB_CONNECTION_STRING)
 
 	// FIXME: get from config file
@@ -40,40 +40,10 @@ func main() {
 		},
 	}
 
-	if config.Options().DEBUG {
-		now := uint64(time.Now().Unix())
-
-		builder := stats.NewStatBuilder(coins[0])
-		stepSize := builder.GetStepSize(now-(30*24*3600), now, 144)
-
-		allStats := make([]*[]stats.Value, 0)
-
-		for n, v := range (*stats.GetPresets()) {
-			stats, _ := builder.GetStatByPreset(v, stats.COMPACT_TIME, now-(30*24*3600), now, stepSize)
-			allStats = append(allStats, stats)
-
-		}
-		j, _ := json.Marshal(allStats)
-		ioutil.WriteFile("/tmp/forklol2.json", j, 0644)
-		return
-	}
-
 	syncers := make([]bitcoin.ChainSync, 0)
-
-	done := make(chan bool)
-
-	// initial sync
-	for _, coin := range coins {
-		sync := bitcoin.NewChainSync(coin)
-		go sync.Sync(done)
-
-		syncers = append(syncers, sync)
+	for _, c := range coins {
+		syncers = append(syncers, bitcoin.NewChainSync(c))
 	}
-
-	for n := 0; n < len(syncers); n++ {
-		<-done
-	}
-	close(done)
 
 	RunSyncers(syncers)
 }
@@ -91,10 +61,16 @@ func RunSyncers(syncers []bitcoin.ChainSync) {
 			}
 		}
 
+		changed := false
 		for n := 0; n < len(syncers); n++ {
-			<-done
+			changed = <-done || changed
 		}
 		close(done)
+
+		if changed {
+			stats.Package(coins)
+		}
+
 		t = time.NewTicker(time.Second * 5)
 	}
 }

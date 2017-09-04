@@ -133,3 +133,11 @@ func InsertRates(tx *sqlx.Tx, coin string, height uint64, rates *map[string]floa
 
 	return err
 }
+
+// Returns the time of the last block found
+func GetLastTime() (uint64, error) {
+	var last uint64
+
+	err := GetDB().Get(&last, "SELECT MAX(time) FROM blocks")
+	return last, err
+}

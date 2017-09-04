@@ -34,6 +34,18 @@ func (b StatBuilder) getStatisticFetcherFromKind(preset StatPreset) StatisticFet
 	}
 }
 
-func (b StatBuilder) GetStepSize(from, to, parts uint64) uint64 {
+func GetStepSize(from, to, parts uint64) uint64 {
 	return (to - from) / parts
+}
+
+// GetCompacterIndex returns an array of integeres representing every step in the compacted set
+func GetCompacterIndex(from, to, step uint64) *[]uint64 {
+	compacter := newCompacter(COMPACT_HEIGHT, from, to, step, "b")
+
+	index := make([]uint64, 0)
+	for n := compacter.From; n < compacter.To; n += compacter.StepSize {
+		index = append(index, n)
+	}
+
+	return &index
 }

@@ -26,6 +26,7 @@ func (c ChainSync) Sync(done chan bool) {
 	prevHeight, prevHash, err := db.GetLastBlock(c.Coin.Symbol)
 	if err != nil {
 		log.Printf("Could not get last %s block from database: %s\n", c.Coin.Symbol, err.Error())
+		done <- false
 		return
 	}
 
@@ -34,6 +35,7 @@ func (c ChainSync) Sync(done chan bool) {
 	height, hash, err := client.GetLastBlock()
 	if err != nil {
 		log.Printf("Could not get last block from %s chain: %s.\n", c.Coin.Symbol, err.Error())
+		done <- false
 		return
 	}
 
@@ -42,14 +44,15 @@ func (c ChainSync) Sync(done chan bool) {
 		log.Printf("Syncing %s chain to block %d (from %d, %d blocks)\n", c.Coin.Symbol, height, prevHeight, height-prevHeight)
 
 		c.syncFromHeight(prevHeight, height)
-
+		done <- true
+		return
 	} else if prevHash != hash {
 		// @TODO check for reorg or new best
 	} else {
 		// no new block(s) found
 	}
 
-	done <- true
+	done <- false
 }
 
 // syncFromHeight will get new blocks from bitcoind and pass them to handleNewBlock for processing

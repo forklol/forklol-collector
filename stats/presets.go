@@ -29,8 +29,8 @@ func LoadPresets() {
 	/* Block statistics */
 	presets["BLK_DIFFICULTY_AVG"] = StatPreset{Kind: KIND_BLOCK, Property: "difficulty", Method: METHOD_AVG, Type: TYPE_FLOAT64}
 	presets["BLK_WORK_AVG"] = StatPreset{Kind: KIND_BLOCK, Property: "work", Method: METHOD_AVG, Type: TYPE_FLOAT64}
-	presets["BLK_TIME_AVG"] = StatPreset{Kind: KIND_BLOCK, Property: "time", Method: METHOD_AVG, Type: TYPE_FLOAT64}
-	presets["BLK_HEIGHT_AVG"] = StatPreset{Kind: KIND_BLOCK, Property: "height", Method: METHOD_AVG, Type: TYPE_FLOAT64}
+	presets["BLK_TIME_AVG"] = StatPreset{Kind: KIND_BLOCK, Property: "time", Method: METHOD_AVG, Type: TYPE_FLOAT32}
+	presets["BLK_HEIGHT_AVG"] = StatPreset{Kind: KIND_BLOCK, Property: "height", Method: METHOD_AVG, Type: TYPE_FLOAT32}
 	presets["BLK_HEIGHT_MIN"] = StatPreset{Kind: KIND_BLOCK, Property: "height", Method: METHOD_MIN, Type: TYPE_INT32}
 	presets["BLK_HEIGHT_MAX"] = StatPreset{Kind: KIND_BLOCK, Property: "height", Method: METHOD_MAX, Type: TYPE_INT32}
 
@@ -79,8 +79,8 @@ func LoadPresets() {
 	presets["DETAIL_VMINFEERATE_MIN"] = StatPreset{Kind: KIND_DETAIL, Property: "vminfeerate", Method: METHOD_MIN, Type: TYPE_INT32}
 	presets["DETAIL_MAXFEERATE_MAX"] = StatPreset{Kind: KIND_DETAIL, Property: "maxfeerate", Method: METHOD_MAX, Type: TYPE_INT32}
 	presets["DETAIL_VMAXFEERATE_MAX"] = StatPreset{Kind: KIND_DETAIL, Property: "vmaxfeerate", Method: METHOD_MAX, Type: TYPE_INT32}
-	presets["DETAIL_MEDIANFEERATE_MEDIAN"] = StatPreset{Kind: KIND_DETAIL, Property: "medianfeerate", Method: METHOD_AVG, Type: TYPE_FLOAT32}
-	presets["DETAIL_VMEDIANFEERATE_MEDIAN"] = StatPreset{Kind: KIND_DETAIL, Property: "vmedianfeerate", Method: METHOD_AVG, Type: TYPE_FLOAT32}
+	presets["DETAIL_MEDIANFEERATE_AVG"] = StatPreset{Kind: KIND_DETAIL, Property: "medianfeerate", Method: METHOD_AVG, Type: TYPE_FLOAT32}
+	presets["DETAIL_VMEDIANFEERATE_AVG"] = StatPreset{Kind: KIND_DETAIL, Property: "vmedianfeerate", Method: METHOD_AVG, Type: TYPE_FLOAT32}
 
 	presets["DETAIL_INPUTS_AVG"] = StatPreset{Kind: KIND_DETAIL, Property: "inputs", Method: METHOD_AVG, Type: TYPE_FLOAT32}
 	presets["DETAIL_OUTPUTS_AVG"] = StatPreset{Kind: KIND_DETAIL, Property: "outputs", Method: METHOD_AVG, Type: TYPE_FLOAT32}
