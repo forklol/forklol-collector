@@ -16,10 +16,10 @@ const (
 type ValueMethod string
 
 const (
-	VALUE_MIN  ValueMethod = "MIN"
-	VALUE_MAX  ValueMethod = "MAX"
-	VALUE_AVG  ValueMethod = "AVG"
-	VALUE_LAST ValueMethod = "LAST"
+	METHOD_MIN  ValueMethod = "MIN"
+	METHOD_MAX  ValueMethod = "MAX"
+	METHOD_AVG  ValueMethod = "AVG"
+	METHOD_LAST ValueMethod = "LAST"
 )
 
 type ValueType string
@@ -38,6 +38,7 @@ type Statistic struct {
 
 var baseBlockQuery = "SELECT %s as value FROM blocks b WHERE b.coin = '%s' "
 var baseDetailQuery = "SELECT %s as value FROM blocks b JOIN details d ON b.coin = d.coin AND b.height = d.height WHERE b.coin = '%s' "
+var baseHashrateQuery = "SELECT %s as value FROM blocks b JOIN hashrates h ON b.coin = h.coin AND b.height = h.height WHERE b.coin = '%s' "
 
 type BlockStatistic struct {
 	Statistic
@@ -75,6 +76,14 @@ func NewBlockStatistic(coin, prop string) *BlockStatistic {
 func NewDetailStatistic(coin, prop string) *BlockStatistic {
 	stat := BlockStatistic{
 		Statistic: newStatistic(coin, prop, baseDetailQuery, "d"),
+	}
+
+	return &stat
+}
+
+func NewHashrateStatistic(coin, prop string) *BlockStatistic {
+	stat := BlockStatistic{
+		Statistic: newStatistic(coin, prop, baseHashrateQuery, "h"),
 	}
 
 	return &stat
@@ -120,6 +129,7 @@ func (s Statistic) Compacter(typ CompactType, from, to, stepsize uint64) Compact
 	return newCompacter(typ, from, to, stepsize, s.Base)
 }
 
+// GetValues returns an array with Value's. Value data type depends on the given ValueType and may contain <nil>'s
 func (s Statistic) GetValues(compacter Compacter, method ValueMethod, typ ValueType) *[]Value {
 	selec := fmt.Sprintf("%s(%s.%s)", method, s.Base, s.Property)
 	qry := fmt.Sprintf(s.Query, selec, s.Coin)

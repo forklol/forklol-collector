@@ -8,7 +8,6 @@ import (
 	"forklol-collector/db"
 	"forklol-collector/bitcoin"
 	"time"
-	"log"
 	"forklol-collector/stats"
 )
 
@@ -39,10 +38,10 @@ func main() {
 	}
 
 	if config.Options().DEBUG {
-		now := uint64(time.Now().Unix() - (600 * 24 * 3600))
+		now := uint64(time.Now().Unix())
 
-		s := stats.NewDetailStatistic("BTC", "txs")
-		fmt.Printf("%+v\n",s.GetValues(s.Compacter(stats.COMPACT_TIME, now-(3*3600), now, 3600), stats.VALUE_AVG, stats.TYPE_FLOAT64))
+		s := stats.NewDetailStatistic("BTC", "swtxs")
+		fmt.Printf("%+v\n", s.GetValues(s.Compacter(stats.COMPACT_TIME, now-(48*3600), now, 3600), stats.METHOD_AVG, stats.TYPE_FLOAT64))
 		return
 	}
 
@@ -75,7 +74,6 @@ func RunSyncers(syncers []bitcoin.ChainSync) {
 		case <-t.C:
 			t.Stop()
 			for _, sync := range syncers {
-				log.Printf("Checking for new %s blocks.\n", sync.Coin.Symbol)
 				go sync.Sync(done)
 			}
 		}
