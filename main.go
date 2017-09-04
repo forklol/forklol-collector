@@ -9,12 +9,15 @@ import (
 	"forklol-collector/bitcoin"
 	"time"
 	"forklol-collector/stats"
+	"encoding/json"
+	"io/ioutil"
 )
 
 var coins []bitcoin.Coin
 
 func main() {
 	Init()
+	stats.LoadPresets()
 	db.InitDB(config.Options().DB_CONNECTION_STRING)
 
 	// FIXME: get from config file
@@ -40,8 +43,18 @@ func main() {
 	if config.Options().DEBUG {
 		now := uint64(time.Now().Unix())
 
-		s := stats.NewDetailStatistic("BTC", "swtxs")
-		fmt.Printf("%+v\n", s.GetValues(s.Compacter(stats.COMPACT_TIME, now-(48*3600), now, 3600), stats.METHOD_AVG, stats.TYPE_FLOAT64))
+		builder := stats.NewStatBuilder(coins[0])
+		stepSize := builder.GetStepSize(now-(30*24*3600), now, 144)
+
+		allStats := make([]*[]stats.Value, 0)
+
+		for n, v := range (*stats.GetPresets()) {
+			stats, _ := builder.GetStatByPreset(v, stats.COMPACT_TIME, now-(30*24*3600), now, stepSize)
+			allStats = append(allStats, stats)
+
+		}
+		j, _ := json.Marshal(allStats)
+		ioutil.WriteFile("/tmp/forklol2.json", j, 0644)
 		return
 	}
 

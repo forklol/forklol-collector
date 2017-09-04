@@ -7,6 +7,15 @@ type StatPreset struct {
 	Property string
 }
 
+type StatKind string
+
+const (
+	KIND_BLOCK    StatKind = "block"
+	KIND_DETAIL   StatKind = "detail"
+	KIND_HASHRATE StatKind = "hashrate"
+	KIND_PRICE    StatKind = "price"
+)
+
 var presets map[string]StatPreset
 
 func GetPresets() *map[string]StatPreset {
@@ -14,6 +23,9 @@ func GetPresets() *map[string]StatPreset {
 }
 
 func LoadPresets() {
+
+	presets = make(map[string]StatPreset, 0)
+
 	/* Block statistics */
 	presets["BLK_DIFFICULTY_AVG"] = StatPreset{Kind: KIND_BLOCK, Property: "difficulty", Method: METHOD_AVG, Type: TYPE_FLOAT64}
 	presets["BLK_WORK_AVG"] = StatPreset{Kind: KIND_BLOCK, Property: "work", Method: METHOD_AVG, Type: TYPE_FLOAT64}
@@ -47,13 +59,13 @@ func LoadPresets() {
 	presets["HASHRATE_D7_MIN"] = StatPreset{Kind: KIND_HASHRATE, Property: "d7", Method: METHOD_MIN, Type: TYPE_FLOAT64}
 	presets["HASHRATE_D30_MIN"] = StatPreset{Kind: KIND_HASHRATE, Property: "d30", Method: METHOD_MIN, Type: TYPE_FLOAT64}
 
-	presets["HASHRATE_H3_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "h3", Method: METHOD_LAST, Type: TYPE_FLOAT64}
-	presets["HASHRATE_H6_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "h6", Method: METHOD_LAST, Type: TYPE_FLOAT64}
-	presets["HASHRATE_H12_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "h12", Method: METHOD_LAST, Type: TYPE_FLOAT64}
-	presets["HASHRATE_D1_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "d1", Method: METHOD_LAST, Type: TYPE_FLOAT64}
-	presets["HASHRATE_D3_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "d3", Method: METHOD_LAST, Type: TYPE_FLOAT64}
-	presets["HASHRATE_D7_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "d7", Method: METHOD_LAST, Type: TYPE_FLOAT64}
-	presets["HASHRATE_D30_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "d30", Method: METHOD_LAST, Type: TYPE_FLOAT64}
+	/*	presets["HASHRATE_H3_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "h3", Method: METHOD_LAST, Type: TYPE_FLOAT64}
+		presets["HASHRATE_H6_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "h6", Method: METHOD_LAST, Type: TYPE_FLOAT64}
+		presets["HASHRATE_H12_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "h12", Method: METHOD_LAST, Type: TYPE_FLOAT64}
+		presets["HASHRATE_D1_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "d1", Method: METHOD_LAST, Type: TYPE_FLOAT64}
+		presets["HASHRATE_D3_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "d3", Method: METHOD_LAST, Type: TYPE_FLOAT64}
+		presets["HASHRATE_D7_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "d7", Method: METHOD_LAST, Type: TYPE_FLOAT64}
+		presets["HASHRATE_D30_LAST"] = StatPreset{Kind: KIND_HASHRATE, Property: "d30", Method: METHOD_LAST, Type: TYPE_FLOAT64}*/
 
 	/* Detail statistics */
 	presets["DETAIL_AVGFEE_AVG"] = StatPreset{Kind: KIND_DETAIL, Property: "avgfee", Method: METHOD_AVG, Type: TYPE_FLOAT32}
@@ -67,8 +79,8 @@ func LoadPresets() {
 	presets["DETAIL_VMINFEERATE_MIN"] = StatPreset{Kind: KIND_DETAIL, Property: "vminfeerate", Method: METHOD_MIN, Type: TYPE_INT32}
 	presets["DETAIL_MAXFEERATE_MAX"] = StatPreset{Kind: KIND_DETAIL, Property: "maxfeerate", Method: METHOD_MAX, Type: TYPE_INT32}
 	presets["DETAIL_VMAXFEERATE_MAX"] = StatPreset{Kind: KIND_DETAIL, Property: "vmaxfeerate", Method: METHOD_MAX, Type: TYPE_INT32}
-	presets["DETAIL_MEDIANFEERATE_MEDIAN"] = StatPreset{Kind: KIND_DETAIL, Property: "medianfeerate", Method: METHOD_AVG, Type: TYPE_INT32}
-	presets["DETAIL_VMEDIANFEERATE_MEDIAN"] = StatPreset{Kind: KIND_DETAIL, Property: "vmedianfeerate", Method: METHOD_AVG, Type: TYPE_INT32}
+	presets["DETAIL_MEDIANFEERATE_MEDIAN"] = StatPreset{Kind: KIND_DETAIL, Property: "medianfeerate", Method: METHOD_AVG, Type: TYPE_FLOAT32}
+	presets["DETAIL_VMEDIANFEERATE_MEDIAN"] = StatPreset{Kind: KIND_DETAIL, Property: "vmedianfeerate", Method: METHOD_AVG, Type: TYPE_FLOAT32}
 
 	presets["DETAIL_INPUTS_AVG"] = StatPreset{Kind: KIND_DETAIL, Property: "inputs", Method: METHOD_AVG, Type: TYPE_FLOAT32}
 	presets["DETAIL_OUTPUTS_AVG"] = StatPreset{Kind: KIND_DETAIL, Property: "outputs", Method: METHOD_AVG, Type: TYPE_FLOAT32}
@@ -104,8 +116,8 @@ func LoadPresets() {
 	presets["DETAIL_SWTXS_MAX"] = StatPreset{Kind: KIND_DETAIL, Property: "swtxs", Method: METHOD_MAX, Type: TYPE_INT32}
 
 	presets["DETAIL_TOTALOUT_AVG"] = StatPreset{Kind: KIND_DETAIL, Property: "totalout", Method: METHOD_AVG, Type: TYPE_FLOAT32}
-	presets["DETAIL_TOTALOUT_MAX"] = StatPreset{Kind: KIND_DETAIL, Property: "totalout", Method: METHOD_MAX, Type: TYPE_INT32}
-	presets["DETAIL_TOTALOUT_MIN"] = StatPreset{Kind: KIND_DETAIL, Property: "totalout", Method: METHOD_MIN, Type: TYPE_INT32}
+	presets["DETAIL_TOTALOUT_MAX"] = StatPreset{Kind: KIND_DETAIL, Property: "totalout", Method: METHOD_MAX, Type: TYPE_UINT64}
+	presets["DETAIL_TOTALOUT_MIN"] = StatPreset{Kind: KIND_DETAIL, Property: "totalout", Method: METHOD_MIN, Type: TYPE_UINT64}
 
 	presets["DETAIL_TOTALWEIGHT_AVG"] = StatPreset{Kind: KIND_DETAIL, Property: "totalweight", Method: METHOD_AVG, Type: TYPE_FLOAT32}
 	presets["DETAIL_TOTALWEIGHT_MAX"] = StatPreset{Kind: KIND_DETAIL, Property: "totalweight", Method: METHOD_MAX, Type: TYPE_INT32}

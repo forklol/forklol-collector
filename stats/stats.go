@@ -19,7 +19,7 @@ const (
 	METHOD_MIN  ValueMethod = "MIN"
 	METHOD_MAX  ValueMethod = "MAX"
 	METHOD_AVG  ValueMethod = "AVG"
-	METHOD_LAST ValueMethod = "LAST"
+	//METHOD_LAST ValueMethod = "LAST"
 )
 
 type ValueType string
@@ -32,6 +32,11 @@ const (
 	TYPE_INT32   ValueType = "int32"
 )
 
+type StatisticFetcher interface {
+	Compacter(typ CompactType, from, to, stepsize uint64) Compacter
+	GetValues(compacter Compacter, method ValueMethod, typ ValueType) *[]Value
+}
+
 type Statistic struct {
 	Coin, Query, Property, Base string
 }
@@ -39,22 +44,6 @@ type Statistic struct {
 var baseBlockQuery = "SELECT %s as value FROM blocks b WHERE b.coin = '%s' "
 var baseDetailQuery = "SELECT %s as value FROM blocks b JOIN details d ON b.coin = d.coin AND b.height = d.height WHERE b.coin = '%s' "
 var baseHashrateQuery = "SELECT %s as value FROM blocks b JOIN hashrates h ON b.coin = h.coin AND b.height = h.height WHERE b.coin = '%s' "
-
-type BlockStatistic struct {
-	Statistic
-}
-
-type DetailStatistic struct {
-	Statistic
-}
-
-type HashrateStatistic struct {
-	Statistic
-}
-
-type PriceStatistic struct {
-	Statistic
-}
 
 func newStatistic(coin, prop, query, base string) Statistic {
 	return Statistic{
@@ -65,28 +54,16 @@ func newStatistic(coin, prop, query, base string) Statistic {
 	}
 }
 
-func NewBlockStatistic(coin, prop string) *BlockStatistic {
-	stat := BlockStatistic{
-		Statistic: newStatistic(coin, prop, baseBlockQuery, "b"),
-	}
-
-	return &stat
+func NewBlockStatistic(coin, prop string) Statistic {
+	return newStatistic(coin, prop, baseBlockQuery, "b")
 }
 
-func NewDetailStatistic(coin, prop string) *BlockStatistic {
-	stat := BlockStatistic{
-		Statistic: newStatistic(coin, prop, baseDetailQuery, "d"),
-	}
-
-	return &stat
+func NewDetailStatistic(coin, prop string) Statistic {
+	return newStatistic(coin, prop, baseDetailQuery, "d")
 }
 
-func NewHashrateStatistic(coin, prop string) *BlockStatistic {
-	stat := BlockStatistic{
-		Statistic: newStatistic(coin, prop, baseHashrateQuery, "h"),
-	}
-
-	return &stat
+func NewHashrateStatistic(coin, prop string) Statistic {
+	return newStatistic(coin, prop, baseHashrateQuery, "h")
 }
 
 type Compacter struct {
