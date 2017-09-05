@@ -17,7 +17,7 @@ var coins []bitcoin.Coin
 func main() {
 	Init()
 	stats.LoadPresets()
-	stats.StartDispatcher(runtime.NumCPU() - 2)
+	stats.StartDispatcher(runtime.NumCPU())
 	db.InitDB(config.Options().DB_CONNECTION_STRING)
 
 	// FIXME: get from config file
@@ -49,7 +49,7 @@ func main() {
 }
 
 func RunSyncers(syncers []bitcoin.ChainSync) {
-	t := time.NewTicker(time.Second * 5)
+	t := time.NewTicker(time.Microsecond)
 
 	for {
 		done := make(chan bool)

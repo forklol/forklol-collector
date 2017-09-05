@@ -16,10 +16,10 @@ const (
 type ValueMethod string
 
 const (
-	METHOD_MIN  ValueMethod = "MIN"
-	METHOD_MAX  ValueMethod = "MAX"
-	METHOD_AVG  ValueMethod = "AVG"
-	//METHOD_LAST ValueMethod = "LAST"
+	METHOD_MIN   ValueMethod = "MIN"
+	METHOD_MAX   ValueMethod = "MAX"
+	METHOD_AVG   ValueMethod = "AVG"
+	METHOD_COUNT ValueMethod = "COUNT"
 )
 
 type ValueType string
@@ -33,7 +33,7 @@ const (
 )
 
 type StatisticFetcher interface {
-	Compacter(typ CompactType, from, to, stepsize uint64) Compacter
+	Compacter(typ CompactType, from, to, stepsize int64) Compacter
 	GetValues(compacter Compacter, method ValueMethod, typ ValueType) *[]Value
 }
 
@@ -68,11 +68,11 @@ func NewHashrateStatistic(coin, prop string) Statistic {
 
 type Compacter struct {
 	Type               CompactType
-	From, To, StepSize uint64
+	From, To, StepSize int64
 	Base               string
 }
 
-func newCompacter(typ CompactType, from, to, stepsize uint64, base string) Compacter {
+func newCompacter(typ CompactType, from, to, stepsize int64, base string) Compacter {
 	compacter := Compacter{
 		Type:     typ,
 		From:     from,
@@ -89,11 +89,11 @@ func newCompacter(typ CompactType, from, to, stepsize uint64, base string) Compa
 	return compacter
 }
 
-func (c Compacter) Num() uint64 {
+func (c Compacter) Num() int64 {
 	return (c.To - c.From) / c.StepSize
 }
 
-func (c Compacter) GetRestriction(seq uint64) string {
+func (c Compacter) GetRestriction(seq int64) string {
 	f := c.From + (seq * c.StepSize)
 	t := f + c.StepSize
 
@@ -102,7 +102,7 @@ func (c Compacter) GetRestriction(seq uint64) string {
 
 type Value interface{}
 
-func (s Statistic) Compacter(typ CompactType, from, to, stepsize uint64) Compacter {
+func (s Statistic) Compacter(typ CompactType, from, to, stepsize int64) Compacter {
 	return newCompacter(typ, from, to, stepsize, s.Base)
 }
 
@@ -114,7 +114,7 @@ func (s Statistic) GetValues(compacter Compacter, method ValueMethod, typ ValueT
 	steps := compacter.Num()
 	values := make([]Value, steps)
 
-	for n := uint64(0); n < steps; n++ {
+	for n := int64(0); n < steps; n++ {
 		q := qry + compacter.GetRestriction(n) + " GROUP BY b.coin"
 		switch typ {
 		case TYPE_FLOAT64:

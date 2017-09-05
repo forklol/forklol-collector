@@ -16,7 +16,7 @@ func NewStatBuilder(coin bitcoin.Coin) *StatBuilder {
 }
 
 // GetStatByPreset returns []Value based on a predefined preset from stats.presets.go
-func (b StatBuilder) GetStatByPreset(preset StatPreset, ctype CompactType, from, to, step uint64) (*[]Value, error) {
+func (b StatBuilder) GetStatByPreset(preset StatPreset, ctype CompactType, from, to, step int64) (*[]Value, error) {
 	s := b.getStatisticFetcherFromKind(preset)
 	return s.GetValues(s.Compacter(ctype, from, to, step), preset.Method, preset.Type), nil
 }
@@ -34,15 +34,15 @@ func (b StatBuilder) getStatisticFetcherFromKind(preset StatPreset) StatisticFet
 	}
 }
 
-func GetStepSize(from, to, parts uint64) uint64 {
+func GetStepSize(from, to, parts int64) int64 {
 	return (to - from) / parts
 }
 
 // GetCompacterIndex returns an array of integeres representing every step in the compacted set
-func GetCompacterIndex(from, to, step uint64) *[]uint64 {
+func GetCompacterIndex(from, to, step int64) *[]int64 {
 	compacter := newCompacter(COMPACT_HEIGHT, from, to, step, "b")
 
-	index := make([]uint64, 0)
+	index := make([]int64, 0)
 	for n := compacter.From; n < compacter.To; n += compacter.StepSize {
 		index = append(index, n)
 	}

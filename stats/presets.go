@@ -33,6 +33,7 @@ func LoadPresets() {
 	presets["BLK_HEIGHT_AVG"] = StatPreset{Kind: KIND_BLOCK, Property: "height", Method: METHOD_AVG, Type: TYPE_FLOAT32}
 	presets["BLK_HEIGHT_MIN"] = StatPreset{Kind: KIND_BLOCK, Property: "height", Method: METHOD_MIN, Type: TYPE_INT32}
 	presets["BLK_HEIGHT_MAX"] = StatPreset{Kind: KIND_BLOCK, Property: "height", Method: METHOD_MAX, Type: TYPE_INT32}
+	presets["BLK_COUNT_COUNT"] = StatPreset{Kind: KIND_BLOCK, Property: "coin", Method: METHOD_COUNT, Type: TYPE_INT32}
 
 	/* Hashrate statistics */
 	presets["HASHRATE_H3_AVG"] = StatPreset{Kind: KIND_HASHRATE, Property: "h3", Method: METHOD_AVG, Type: TYPE_FLOAT64}

@@ -135,9 +135,30 @@ func InsertRates(tx *sqlx.Tx, coin string, height uint64, rates *map[string]floa
 }
 
 // Returns the time of the last block found
-func GetLastTime() (uint64, error) {
-	var last uint64
+func GetLastTime() (int64, error) {
+	var last int64
 
 	err := GetDB().Get(&last, "SELECT MAX(time) FROM blocks")
 	return last, err
+}
+
+func GetLastHeights() map[string]int64 {
+
+	lh := make([]struct {
+		Coin   string `db:"coin"`
+		Height int64 `db:"height"`
+	}, 0)
+
+	err := GetDB().Select(&lh, "SELECT MAX(height) as height, coin FROM blocks GROUP BY coin")
+	if err != nil {
+		panic("Could not get last heights: " + err.Error())
+	}
+
+	mp := make(map[string]int64)
+
+	for _, l := range lh {
+		mp[l.Coin] = l.Height
+	}
+
+	return mp
 }

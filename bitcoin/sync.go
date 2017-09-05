@@ -71,7 +71,7 @@ func (c ChainSync) syncFromHeight(prevHeight, height uint64) {
 			break
 		}
 
-		log.Printf("\u2794 Handling new %s block %d, %s (%d left)", c.Coin.Symbol, h, hash, height-h)
+		log.Printf("\u2794 Handling new %s block %d, %s (%d left)", c.Coin.Symbol, h, hash[len(hash)-9:len(hash)-1], height-h)
 		start := time.Now()
 		err = c.handleNewBlock(block)
 		end := time.Now()
